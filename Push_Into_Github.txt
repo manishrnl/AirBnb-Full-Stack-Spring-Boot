@@ -3,15 +3,19 @@ Remove-Item -Recurse -Force ".git"
 Remove-Item -Recurse -Force ".\spring-boot-back-end\.git"
 
 git init
-
 git add .
 git commit -m "Version 1.0.2"
-git remote add origin https://github.com/manishrnl/AirBnb-Full-Stack.git
 git branch -M main
-git push -u origin main --force
+git remote add origin https://github.com/manishrnl/AirBnb-Full-Stack-Spring-Boot.git
+git push -u origin main
 
 
-
+git init
+git add .
+git commit -m "Version 1.0.2"
+git branch -M main
+git remote add origin https://github.com/manishrnl/AirBnb-Full-Stack-React.git
+git push -u origin main
 
 
 #To kill task like port 8080 , tun following command in cmd as an administration
