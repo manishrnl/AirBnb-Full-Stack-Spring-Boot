@@ -29,11 +29,15 @@ public class WebSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Apply CORS config
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/error").permitAll()
-                        .anyRequest().authenticated()
-
+                        .requestMatchers(
+                                "/api/v1/auth/**", // ✅ match your actual API path
+                                "/auth/**",
+                                "/public/**",
+                                "/error"
+                        ).permitAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilters, UsernamePasswordAuthenticationFilter.class);
@@ -46,11 +50,10 @@ public class WebSecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ✅ Define a proper CORS configuration source
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
+        config.setAllowedOriginPatterns(List.of(
                 "https://manishrnl-1-hotel-clone.netlify.app",
                 "http://localhost:5173"
         ));
