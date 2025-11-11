@@ -1,11 +1,11 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Role;
 
 import java.util.Set;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Table(name = "app_user")
 public class User {
 
     @Id
