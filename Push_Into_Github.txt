@@ -3,9 +3,6 @@ Remove-Item -Recurse -Force ".git"
 Remove-Item -Recurse -Force ".\spring-boot-back-end\.git"
 
 
-
-
-
 #################     Backend
 git init
 git add .
@@ -15,13 +12,9 @@ git remote add origin https://github.com/manishrnl/AirBnb-Full-Stack-Spring-Boot
 git push -u origin main
 
 
-
 git add .
-git commit -m "Version 1.0.2"
+git commit -m "Adding New Features"
 git push -u origin main
-
-
-
 
 
 
@@ -35,13 +28,10 @@ git branch -M main
 git remote add origin https://github.com/manishrnl/AirBnb-Full-Stack-React.git
 git push -u origin main
 
+
 git add .
-git commit -m "Version 1.0.2"
+git commit -m "Adding New Fwatures"
 git push -u origin main
-
-
-
-
 
 
 
