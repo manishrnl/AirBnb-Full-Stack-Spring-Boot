@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
-@Primary
+
 public class BasePricingStrategy implements PricingStrategy {
 
     @Override

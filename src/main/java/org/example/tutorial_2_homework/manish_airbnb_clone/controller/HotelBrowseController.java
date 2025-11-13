@@ -3,6 +3,7 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelInfoDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelPriceDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelSearchRequest;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.HotelService;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.InventoryService;
@@ -25,8 +26,8 @@ public class HotelBrowseController {
     private final HotelService hotelService;
 
     @GetMapping("/search")
-    public ResponseEntity<Page<HotelDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest, Pageable pageable) {
-        Page page = inventoryService.searchHotels(hotelSearchRequest);
+    public ResponseEntity<Page<HotelPriceDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest, Pageable pageable) {
+        Page<HotelPriceDto> page = inventoryService.searchHotels(hotelSearchRequest);
 
         return ResponseEntity.ok(page);
     }

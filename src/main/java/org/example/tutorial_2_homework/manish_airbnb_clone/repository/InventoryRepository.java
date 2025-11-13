@@ -80,4 +80,5 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Page<Room> findAllBy(Pageable sortedPageable);
 
 
+    List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
 }

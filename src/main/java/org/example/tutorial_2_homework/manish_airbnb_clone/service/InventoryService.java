@@ -1,5 +1,6 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.service;
 
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelPriceDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelSearchRequest;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.RoomDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.RoomSearchRequestDto;
@@ -13,7 +14,7 @@ public interface InventoryService {
 
     void deleteAllInventories(Room room);
 
-    Page searchHotels(HotelSearchRequest hotelSearchRequest);
+    Page<HotelPriceDto> searchHotels(HotelSearchRequest hotelSearchRequest);
 
 //    Page sortRooms(Pageable pageable, RoomSearchRequestDto roomSearchRequestDto);
 

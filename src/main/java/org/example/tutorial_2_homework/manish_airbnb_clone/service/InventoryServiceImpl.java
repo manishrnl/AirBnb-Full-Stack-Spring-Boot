@@ -2,13 +2,13 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelPriceDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelSearchRequest;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.RoomDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.RoomSearchRequestDto;
-import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Hotel;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Inventory;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Room;
+import org.example.tutorial_2_homework.manish_airbnb_clone.repository.HotelMinPriceRepository;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.InventoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 @Slf4j
 public class InventoryServiceImpl implements InventoryService {
     private final ModelMapper modelMapper;
-
+    private final HotelMinPriceRepository hotelMinPriceRepository;
     private final InventoryRepository inventoryRepository;
 
     @Override
@@ -55,7 +55,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Page searchHotels(HotelSearchRequest hotels) {
+    public Page<HotelPriceDto> searchHotels(HotelSearchRequest hotels) {
         String city = hotels.getCity();
         int pageNumber = hotels.getPageNumber();
         int roomsCount = hotels.getRoomsCount();
@@ -65,11 +65,11 @@ public class InventoryServiceImpl implements InventoryService {
         long dateCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        Page<Hotel> hotelPage =
-                inventoryRepository.findHotelsWithAvailableInventory(city,
-                        startDate, endDate, roomsCount, dateCount, pageable);
+        Page<HotelPriceDto> hotelPage =
+                hotelMinPriceRepository.findHotelsWithAvailableInventory(city,
+                        startDate, endDate,  pageable);
 
-        return hotelPage.map((element) -> modelMapper.map(element, HotelDto.class));
+        return hotelPage;    //.map((element) -> modelMapper.map(element, HotelPriceDto.class));
     }
 
 
@@ -89,47 +89,8 @@ public class InventoryServiceImpl implements InventoryService {
 
         return roomPage.map((element) -> modelMapper.map(element, RoomDto.class));
     }
+
+
 }
 
 
-/*
-
-  public Page<RoomDto> sortRooms(Pageable pageable, RoomSearchRequestDto roomSearchRequestDto) {
-            String sortBy = roomSearchRequestDto.getSortBy();
-            BigDecimal maxPrice = roomSearchRequestDto.getMaxPrice();
-
-            // Build dynamic sort
-            Sort sort = Sort.unsorted();
-            if ("priceLowHigh".equals(sortBy)) {
-                sort = Sort.by(Sort.Direction.ASC, "basePrice");
-            } else if ("priceHighLow".equals(sortBy)) {
-                sort = Sort.by(Sort.Direction.DESC, "basePrice");
-            } else if ("size".equals(sortBy)) {
-                sort = Sort.by(Sort.Direction.DESC, "size");
-            } else if ("availability".equals(sortBy)) {
-                sort = Sort.by(Sort.Direction.DESC, "availability");
-            }
-
-            Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-
-            // Fetch paginated rooms
-            Page<Room> roomPage = inventoryRepository.findAllBy(sortedPageable);
-
-            // Optional filter by price
-            if (maxPrice != null) {
-                List<Room> filtered = roomPage.getContent().stream()
-//                        .filter(r -> r.getBasePrice().toBigInteger().doubleValue() <= maxPrice)
-                        .collect(Collectors.toList());
-
-                return new PageImpl<>(
-                        filtered.stream().map((element) -> modelMapper.map(element, RoomDto.class)).collect(Collectors.toList()),
-                        sortedPageable,
-                        filtered.size()
-                );
-            }
-
-            // Return full paginated response
-            return roomPage.map((element) -> modelMapper.map(element, RoomDto.class));
-        }
-
- */
