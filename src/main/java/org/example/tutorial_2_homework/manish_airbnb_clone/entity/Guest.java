@@ -16,7 +16,7 @@ public class Guest {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity user;
 
     @Column(nullable = false)
     private String name;

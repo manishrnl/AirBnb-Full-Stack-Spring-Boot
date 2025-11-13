@@ -11,14 +11,14 @@ import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Inventory;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Room;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.InventoryRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,26 +73,28 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
 
+    @Override
+    public Page sortRooms(Pageable pageable, RoomSearchRequestDto room) {
+        String city = room.getCity();
+        int pageNumber = room.getPageNumber();
+        int pageSize = room.getPageSize();
+        LocalDate startDate = room.getStartDate();
+        LocalDate endDate = room.getEndDate();
 
-//    @Override
-//    public Page sortRooms(Pageable pageable, RoomSearchRequestDto room) {
-//        String city = room.getCity();
-//        int pageNumber = room.getPageNumber();
-//        int pageSize = room.getPageSize();
-//        LocalDate startDate = room.getStartDate();
-//        LocalDate endDate = room.getEndDate();
-//
-//        BigDecimal price = room.getBasePrice();
-//        long dateCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-//        Pageable pageable1 = PageRequest.of(pageNumber, pageSize);
-//        Page<Room> roomPage =inventoryRepository.findRoomsWithAvailableInventory(city,
-//                startDate,endDate,dateCount,price,pageable1);
-//
-//        return roomPage.map((element) -> modelMapper.map(element, RoomDto.class));
-//    }
+        BigDecimal price = room.getBasePrice();
+        long dateCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        Pageable pageable1 = PageRequest.of(pageNumber, pageSize);
+        Page<Room> roomPage = inventoryRepository.findRoomsWithAvailableInventory(city,
+                startDate, endDate, dateCount, price, pageable1);
+
+        return roomPage.map((element) -> modelMapper.map(element, RoomDto.class));
+    }
+}
 
 
-        public Page<RoomDto> sortRooms(Pageable pageable, RoomSearchRequestDto roomSearchRequestDto) {
+/*
+
+  public Page<RoomDto> sortRooms(Pageable pageable, RoomSearchRequestDto roomSearchRequestDto) {
             String sortBy = roomSearchRequestDto.getSortBy();
             BigDecimal maxPrice = roomSearchRequestDto.getMaxPrice();
 
@@ -129,7 +131,5 @@ public class InventoryServiceImpl implements InventoryService {
             // Return full paginated response
             return roomPage.map((element) -> modelMapper.map(element, RoomDto.class));
         }
-    }
 
-
-
+ */

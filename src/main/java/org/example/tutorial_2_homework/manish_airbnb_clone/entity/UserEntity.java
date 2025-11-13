@@ -2,11 +2,13 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -27,6 +29,9 @@ public class UserEntity implements UserDetails {
     private String email;
     private String password;
     private String name;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

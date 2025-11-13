@@ -107,9 +107,9 @@ public class BookingServiceImpl implements BookingService {
         return booking.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now());
     }
 
-    public User getCurrentUser() {
-        User users = new User(2L, "email", "password", "Manish",
-                new HashSet<>(Arrays.asList(Role.GUEST, Role.HOTEL_MANAGER))
+    public UserEntity getCurrentUser() {
+        UserEntity users = new UserEntity(2L, "email", "password", "Manish",
+               new HashSet<>(Arrays.asList(Role.GUEST, Role.HOTEL_MANAGER))
         );
         return users;
     }

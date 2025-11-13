@@ -46,7 +46,7 @@ public class Hotel {
     private Boolean active;
 
     @ManyToOne
-    private User owner;
+    private UserEntity owner;
 
     @OneToMany(mappedBy = "hotel")
     private List<Room> rooms;
