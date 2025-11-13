@@ -18,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Builder
-
+@Table(name = "user_entity")
 public class UserEntity implements UserDetails {
 
     @Id
