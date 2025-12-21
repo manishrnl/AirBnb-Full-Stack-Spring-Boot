@@ -18,6 +18,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     public String getCheckoutSession(Booking booking, String successUrl, String failureUrl) {
+        log.info("Creating Sessions for booking id : {} ", booking.getId());
         UserEntity userEntity =
                 (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try {
@@ -47,13 +48,11 @@ public class CheckoutServiceImpl implements CheckoutService {
                             ).build()
                     ).build();
             Session session = Session.create(sessionParams);
-
+            log.info("Session created Successfully for booking with id : {} ", booking.getId());
+            return session.getUrl();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
-        return "";
     }
 }

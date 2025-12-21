@@ -1,10 +1,12 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingPaymentInitResponseDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingRequest;
-import org.example.tutorial_2_homework.manish_airbnb_clone.dto.GuestsDto;
-import org.example.tutorial_2_homework.manish_airbnb_clone.repository.BookingRepository;
+
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingStatusResponseDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.BookingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,30 +14,45 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import java.util.List;
+import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
 public class HotelBookingController {
 
-    private final BookingRepository bookingRepository;
     private final BookingService bookingService;
 
     @PostMapping("/init")
+    @Operation(summary = "Initiate the booking", tags = {"Booking Flow"})
     public ResponseEntity<BookingDto> initialiseBooking(@RequestBody BookingRequest bookingRequest) {
         return ResponseEntity.ok(bookingService.initialiseBooking(bookingRequest));
     }
 
-
     @PostMapping("/{bookingId}/addGuests")
-    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId ,
-                                                @RequestBody List<GuestsDto> guestsDtoList) {
-        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestsDtoList));
+    @Operation(summary = "Add guest Ids to the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId,
+                                                @RequestBody List<Long> guestIdList) {
+        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestIdList));
     }
 
     @PostMapping("/{bookingId}/payments")
-    public ResponseEntity<Map<String,String>> initiatePayment(@PathVariable Long bookingId) {
-        String sessionUrl=bookingService.initiatePayments(bookingId);
-        return ResponseEntity.ok(Map.of("sessionUrl",sessionUrl));
+    @Operation(summary = "Initiate payments flow for the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingPaymentInitResponseDto> initiatePayment(@PathVariable Long bookingId) {
+        String sessionUrl = bookingService.initiatePayments(bookingId);
+        return ResponseEntity.ok(new BookingPaymentInitResponseDto(sessionUrl));
     }
 
+    @PostMapping("/{bookingId}/cancel")
+    @Operation(summary = "Cancel the booking", tags = {"Booking Flow"})
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{bookingId}/status")
+    @Operation(summary = "Check the status of the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingStatusResponseDto> getBookingStatus(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(new BookingStatusResponseDto(bookingService.getBookingStatus(bookingId)));
+    }
 }
