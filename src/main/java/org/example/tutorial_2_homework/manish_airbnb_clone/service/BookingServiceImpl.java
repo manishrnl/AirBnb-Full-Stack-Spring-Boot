@@ -11,6 +11,7 @@ import org.example.tutorial_2_homework.manish_airbnb_clone.exception.ResourceNot
 import org.example.tutorial_2_homework.manish_airbnb_clone.exception.UnAuthorisedException;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,10 @@ public class BookingServiceImpl implements BookingService {
     private final InventoryRepository inventoryRepository;
     private final ModelMapper modelMapper;
     private final GuestRepository guestRepository;
+    private final CheckoutServiceImpl checkoutServiceImpl;
+    private final BookingService bookingService;
+    @Value("${employeesService.base.url}")
+    private String baseUrl;
 
     @Override
     @Transactional
@@ -107,6 +112,24 @@ public class BookingServiceImpl implements BookingService {
         booking = bookingRepository.save(booking);
 
         return modelMapper.map(booking, BookingDto.class);
+    }
+
+    @Override
+    public String initiatePayments(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking notfound with id : " + bookingId));
+
+        UserEntity userEntity = getCurrentUser();
+        if (!userEntity.equals(booking.getUser()))
+            throw new IllegalStateException("Booking does not belong to current user with id : " + userEntity.getId());
+
+        if (hasBookingExpired(booking))
+            throw new IllegalStateException("Booking time  has expired. Can not initiate payment");
+
+        String sessionUrl = checkoutServiceImpl.getCheckoutSession(booking, baseUrl +
+                "/payments/success", baseUrl + "/payments/failure");
+        booking.setBookingStatus(BookingStatus.PAYMENTS_PENDING);
+        bookingRepository.save(booking);
+        return sessionUrl;
     }
 
     public Boolean hasBookingExpired(Booking booking) {
