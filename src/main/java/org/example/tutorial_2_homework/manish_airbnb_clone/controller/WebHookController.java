@@ -1,8 +1,8 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.controller;
 
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.BookingService;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,16 +16,15 @@ public class WebHookController {
 
     private final BookingService bookingService;
     @Value("${stripe.webhook.secret}")
-    private String webHookSecret;
+    private String endpointSecret;
 
     @PostMapping("/payment")
-    @Operation(summary = "Capture the Payments", tags = {"webhook"})
     public ResponseEntity<Void> capturePayments(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
         try {
-            Event event = Webhook.constructEvent(payload, sigHeader, webHookSecret);
+            Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             bookingService.capturePayment(event);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
+        } catch (SignatureVerificationException e) {
             throw new RuntimeException(e);
         }
     }

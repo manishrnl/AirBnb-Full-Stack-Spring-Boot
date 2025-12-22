@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingRequest;
-import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelReportDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.GuestsDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.*;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.BookingStatus;
 import org.example.tutorial_2_homework.manish_airbnb_clone.exception.ResourceNotFoundException;
@@ -23,25 +23,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
-
+    private final GuestRepository guestRepository;
+    private final ModelMapper modelMapper;
     private final BookingRepository bookingRepository;
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
     private final InventoryRepository inventoryRepository;
-    private final ModelMapper modelMapper;
-    private final GuestRepository guestRepository;
-    private final CheckoutServiceImpl checkoutServiceImpl;  // This is fine if no cycle here
-    private final PricingService pricingService;
     private final CheckoutService checkoutService;
+    private final PricingService pricingService;
 
     @Value("${employeesService.base.url}")
     private String frontendUrl;
@@ -92,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto addGuests(Long bookingId, List<Long> guestIdList) {
+    public BookingDto addGuests(Long bookingId, List<GuestsDto> guestDtoList) {
 
         log.info("Adding guests for booking with id: {}", bookingId);
 
@@ -112,9 +109,10 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException("Booking is not under reserved state, cannot add guests");
         }
 
-        for (Long guestId : guestIdList) {
-            Guest guest = guestRepository.findById(guestId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Guest not found with id: " + guestId));
+        for (GuestsDto guestDto : guestDtoList) {
+            Guest guest = modelMapper.map(guestDto, Guest.class);
+            guest.setUser(user);
+            guest = guestRepository.save(guest);
             booking.getGuests().add(guest);
         }
 
@@ -138,8 +136,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         String sessionUrl = checkoutService.getCheckoutSession(booking,
-                frontendUrl + "/payments/" + bookingId + "/status",
-                frontendUrl + "/payments/" + bookingId + "/status");
+                frontendUrl + "/payments/success", frontendUrl + "/payments/failure");
 
         booking.setBookingStatus(BookingStatus.PAYMENTS_PENDING);
         bookingRepository.save(booking);
@@ -213,28 +210,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingStatus getBookingStatus(Long bookingId) {
-        return null;
-    }
+    public String getBookingStatus(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+                () -> new ResourceNotFoundException("Booking not found with id: " + bookingId)
+        );
+        UserEntity user = getCurrentUser();
+        if (!user.equals(booking.getUser())) {
+            throw new UnAuthorisedException("Booking does not belong to this user with id: " + user.getId());
+        }
 
-    @Override
-    public List<BookingDto> getAllBookingsByHotelId(Long hotelId) {
-        return List.of();
+        return booking.getBookingStatus().name();
     }
-
-    @Override
-    public HotelReportDto getHotelReport(Long hotelId, LocalDate startDate, LocalDate endDate) {
-        return null;
-    }
-
-    @Override
-    public List<BookingDto> getMyBookings() {
-        return List.of();
-    }
-
 
     public boolean hasBookingExpired(Booking booking) {
-
         return booking.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now());
     }
 

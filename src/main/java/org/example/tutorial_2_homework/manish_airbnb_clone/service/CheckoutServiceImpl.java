@@ -1,32 +1,38 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.service;
 
+import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Booking;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.UserEntity;
+import org.example.tutorial_2_homework.manish_airbnb_clone.repository.BookingRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Slf4j
 @Service
-public class CheckoutServiceImpl implements CheckoutService {
+@RequiredArgsConstructor
+@Slf4j
+public class CheckoutServiceImpl implements CheckoutService{
+
+    private final BookingRepository bookingRepository;
 
     @Override
     public String getCheckoutSession(Booking booking, String successUrl, String failureUrl) {
-        log.info("Creating Sessions for booking id : {} ", booking.getId());
-        UserEntity userEntity =
-                (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Creating session for booking with ID: {}", booking.getId());
+        UserEntity user = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         try {
-            CustomerCreateParams customerCreateParams = CustomerCreateParams.builder()
-                    .setName(userEntity.getName())
-                    .setEmail(userEntity.getEmail())
+            CustomerCreateParams customerParams = CustomerCreateParams.builder()
+                    .setName(user.getName())
+                    .setEmail(user.getEmail())
                     .build();
-            Customer customer = Customer.create(customerCreateParams);
+            Customer customer = Customer.create(customerParams);
 
             SessionCreateParams sessionParams = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -34,25 +40,37 @@ public class CheckoutServiceImpl implements CheckoutService {
                     .setCustomer(customer.getId())
                     .setSuccessUrl(successUrl)
                     .setCancelUrl(failureUrl)
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setQuantity(1L)
+                                    .setPriceData(
+                                            SessionCreateParams.LineItem.PriceData.builder()
+                                                    .setCurrency("inr")
+                                                    .setUnitAmount(booking.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
+                                                    .setProductData(
+                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                    .setName(booking.getHotel().getName() +" : "+ booking.getRoom().getType())
+                                                                    .setDescription("Booking ID: "+booking.getId())
+                                                                    .build()
+                                                    )
+                                                    .build()
+                                    )
+                                    .build()
+                    )
+                    .build();
 
-                    .addLineItem(SessionCreateParams.LineItem.builder()
-                            .setQuantity(1L)
-                            .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
-                                    .setCurrency("inr")
-                                    .setUnitAmount(booking.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
-                                    .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                            .setName(booking.getHotel().getName() + " : " + booking.getRoom().getType())
-                                            .setDescription("Booking ID : " + booking.getId())
-                                            .build()
-                                    ).build()
-                            ).build()
-                    ).build();
             Session session = Session.create(sessionParams);
-            log.info("Session created Successfully for booking with id : {} ", booking.getId());
+
+            booking.setPaymentSessionId(session.getId());
+            bookingRepository.save(booking);
+
+            log.info("Session created successfully for booking with ID: {}", booking.getId());
             return session.getUrl();
 
-        } catch (Exception e) {
+        } catch (StripeException e) {
             throw new RuntimeException(e);
         }
+
+
     }
 }

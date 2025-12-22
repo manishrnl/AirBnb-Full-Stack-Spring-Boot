@@ -58,4 +58,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiResponse<?> apiResponse = new ApiResponse<>(apiError);
         return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
     }
+    //    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<?>> handleInternalServerError(Exception exception) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(exception.getMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+    private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError) {
+        return new ResponseEntity<>(new ApiResponse<>(apiError), apiError.getStatus());
+    }
 }

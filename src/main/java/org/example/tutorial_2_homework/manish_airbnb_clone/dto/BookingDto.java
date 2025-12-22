@@ -3,6 +3,7 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.dto;
 import lombok.Data;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.BookingStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,6 +18,7 @@ public class BookingDto {
     private LocalDateTime updatedAt;
     private BookingStatus bookingStatus;
     private Set<GuestsDto> guests;
+    private BigDecimal amount;
 
 }
 

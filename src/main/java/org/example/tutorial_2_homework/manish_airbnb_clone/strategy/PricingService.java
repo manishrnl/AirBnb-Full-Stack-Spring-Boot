@@ -1,6 +1,5 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.strategy;
 
-import lombok.RequiredArgsConstructor;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Inventory;
 import org.springframework.stereotype.Service;
 
@@ -8,23 +7,21 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-
 public class PricingService {
 
     public BigDecimal calculateDynamicPricing(Inventory inventory) {
-
         PricingStrategy pricingStrategy = new BasePricingStrategy();
 
-        //Apply additional Strategy layers
+        // apply the additional strategies
         pricingStrategy = new SurgePricingStrategy(pricingStrategy);
         pricingStrategy = new OccupancyPricingStrategy(pricingStrategy);
         pricingStrategy = new UrgencyPricingStrategy(pricingStrategy);
         pricingStrategy = new HolidayPricingStrategy(pricingStrategy);
 
-
         return pricingStrategy.calculatePrice(inventory);
     }
 
+    //    Return the sum of price of this inventory list
     public BigDecimal calculateTotalPrice(List<Inventory> inventoryList) {
         return inventoryList.stream()
                 .map(this::calculateDynamicPricing)

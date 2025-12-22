@@ -3,6 +3,7 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.service.BookingService;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.HotelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.List;
 public class HotelController {
 
     private final HotelService hotelService;
-
+    private final BookingService bookingService;
     @PostMapping
     public ResponseEntity<HotelDto> createNewHotel(@RequestBody HotelDto hotelDto) {
         log.info("Attempting to create a new hotel with name: {} ", hotelDto.getName());
