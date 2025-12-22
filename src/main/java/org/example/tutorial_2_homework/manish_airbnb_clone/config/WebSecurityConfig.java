@@ -46,7 +46,9 @@ public class WebSecurityConfig {
                         // .requestMatchers("/admin/**").hasRole("HOTEL_MANAGER")
                         .requestMatchers("/bookings/**").authenticated()
                         .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/webhook/**").permitAll()
+                        .requestMatchers("/payments/success", "/payments/failure").permitAll()
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilters, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exHandlingConfig -> exHandlingConfig.accessDeniedHandler(accessDeniedHandler()));

@@ -45,6 +45,24 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
+    public void confirmPaymentBySessionId(String sessionId) {
+        Booking booking =
+                bookingRepository.findByPaymentSessionId(sessionId).orElseThrow(() -> new ResourceNotFoundException("Booking not found for session ID: " + sessionId));
+        if (booking.getBookingStatus() == BookingStatus.CONFIRMED) {
+            log.info("Booking with ID: {} is already confirmed.", booking.getId());
+            return;
+        }
+        booking.setBookingStatus(BookingStatus.CONFIRMED);
+        bookingRepository.save(booking);
+
+        inventoryRepository.findAndLockReservedInventory(booking.getRoom().getId(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getRoomsCount());
+        inventoryRepository.confirmBooking(booking.getRoom().getId(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getRoomsCount());
+        log.info("Successfully confirmed the booking for Booking ID: {}", booking.getId());
+    }
+
+
+    @Override
+    @Transactional
     public BookingDto initialiseBooking(BookingRequest bookingRequest) {
 
         log.info("Initialising booking for hotel : {}, room: {}, date {}-{}", bookingRequest.getHotelId(),
@@ -230,3 +248,4 @@ public class BookingServiceImpl implements BookingService {
         return (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
+

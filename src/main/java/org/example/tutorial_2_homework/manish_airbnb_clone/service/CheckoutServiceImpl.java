@@ -18,14 +18,15 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CheckoutServiceImpl implements CheckoutService{
+public class CheckoutServiceImpl implements CheckoutService {
 
     private final BookingRepository bookingRepository;
 
     @Override
     public String getCheckoutSession(Booking booking, String successUrl, String failureUrl) {
         log.info("Creating session for booking with ID: {}", booking.getId());
-        UserEntity user = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity user =
+                (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         try {
             CustomerCreateParams customerParams = CustomerCreateParams.builder()
@@ -40,24 +41,17 @@ public class CheckoutServiceImpl implements CheckoutService{
                     .setCustomer(customer.getId())
                     .setSuccessUrl(successUrl)
                     .setCancelUrl(failureUrl)
-                    .addLineItem(
-                            SessionCreateParams.LineItem.builder()
-                                    .setQuantity(1L)
-                                    .setPriceData(
-                                            SessionCreateParams.LineItem.PriceData.builder()
-                                                    .setCurrency("inr")
-                                                    .setUnitAmount(booking.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
-                                                    .setProductData(
-                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                                    .setName(booking.getHotel().getName() +" : "+ booking.getRoom().getType())
-                                                                    .setDescription("Booking ID: "+booking.getId())
-                                                                    .build()
-                                                    )
-                                                    .build()
-                                    )
-                                    .build()
-                    )
-                    .build();
+                    .addLineItem(SessionCreateParams.LineItem.builder()
+                            .setQuantity(1L)
+                            .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
+                                    .setCurrency("inr")
+                                    .setUnitAmount(booking.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
+                                    .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                            .setName(booking.getHotel().getName() + " : " + booking.getRoom().getType())
+                                            .setDescription("Booking ID: " + booking.getId()).build()
+                                    ).build()
+                            ).build()
+                    ).build();
 
             Session session = Session.create(sessionParams);
 

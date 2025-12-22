@@ -1,10 +1,8 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingRequest;
-
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.GuestsDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.service.BookingService;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,12 @@ import java.util.Map;
 public class HotelBookingController {
 
     private final BookingService bookingService;
+
+    @PostMapping("/{sessionId}/confirm")
+    public ResponseEntity<Void> confirmPayment(@PathVariable String sessionId) {
+        bookingService.confirmPaymentBySessionId(sessionId);
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/init")
     public ResponseEntity<BookingDto> initialiseBooking(@RequestBody BookingRequest bookingRequest) {
@@ -48,3 +52,4 @@ public class HotelBookingController {
         return ResponseEntity.ok(Map.of("status", bookingService.getBookingStatus(bookingId)));
     }
 }
+
