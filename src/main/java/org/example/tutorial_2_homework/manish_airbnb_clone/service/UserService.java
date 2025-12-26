@@ -1,12 +1,15 @@
 package org.example.tutorial_2_homework.manish_airbnb_clone.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.ProfileUpdateRequestDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.UserDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Booking;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.UserEntity;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Gender;
 import org.example.tutorial_2_homework.manish_airbnb_clone.exception.ResourceNotFoundException;
+import org.example.tutorial_2_homework.manish_airbnb_clone.repository.BookingRepository;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,12 +23,14 @@ import java.util.List;
 
 import static org.example.tutorial_2_homework.manish_airbnb_clone.util.AppUtils.getCurrentUser;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final BookingRepository bookingRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -41,7 +46,15 @@ public class UserService implements UserDetailsService {
     }
 
     public List<BookingDto> getMyBookings() {
-        return List.of(null);
+        log.info("Fetching bookings for the current user");
+        UserEntity userEntity = getCurrentUser();
+        List<Booking> myBookings = bookingRepository.getBookingsByUserId(userEntity.getId());
+
+        return myBookings
+                .stream()
+                .map((element) -> modelMapper.map(element, BookingDto.class))
+                .toList();
+
     }
 
     public void updateProfile(ProfileUpdateRequestDto profileDto) {
@@ -54,11 +67,7 @@ public class UserService implements UserDetailsService {
         if (name != null) userEntity.setName(name);
         if (gender != null) userEntity.setGender(gender);
         if (dateOfBirth != null) userEntity.setDateOfBirth(dateOfBirth);
-
-
         userRepository.save(userEntity);
-
-
     }
 
     public UserDto getMyProfiles() {

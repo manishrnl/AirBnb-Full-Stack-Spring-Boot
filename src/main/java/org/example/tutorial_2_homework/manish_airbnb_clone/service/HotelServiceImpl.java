@@ -132,7 +132,8 @@ public class HotelServiceImpl implements HotelService {
         Hotel hotel =
                 hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Could not find Hotels with Id : " + hotelId));
         List<RoomDto> rooms = hotel.getRooms()
-                .stream().map((element) -> modelMapper.map(element, RoomDto.class))
+                .stream()
+                .map((element) -> modelMapper.map(element, RoomDto.class))
                 .toList();
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelDto.class), rooms);

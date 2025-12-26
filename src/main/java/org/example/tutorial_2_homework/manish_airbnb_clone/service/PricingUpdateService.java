@@ -39,7 +39,7 @@ public class PricingUpdateService {
 
    // @Scheduled(cron = "40 0/14 * * * *")// Every 14 minutes and 40 sec , this method will
     // run automatically
-    @Scheduled(cron = "0 */10 * * * *")// Every 10 minutes  this method will run
+  //  @Scheduled(cron = "1 */10 * * * *")// Every 10 minutes  this method will run
     // automatically
     public void updatePrices() {
         int page = 0;

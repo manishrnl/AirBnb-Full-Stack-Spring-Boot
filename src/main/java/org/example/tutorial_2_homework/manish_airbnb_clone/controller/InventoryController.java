@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/invetory")
+@RequestMapping("/admin/inventory")
 
 public class InventoryController {
 
@@ -22,7 +22,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.getAllInventoryByRoom(roomId));
     }
 
-    @PatchMapping("/rooms/{roomId")
+    @PatchMapping("/rooms/{roomId}")
     public ResponseEntity<Void> updateInventory(@PathVariable Long roomId,
                                                 @RequestBody UpdateInventoryRequestDto updateInventoryDto) {
         return ResponseEntity.ok(inventoryService.updateInventory(roomId, updateInventoryDto));

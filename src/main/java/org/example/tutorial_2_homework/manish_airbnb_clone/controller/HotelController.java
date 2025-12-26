@@ -68,13 +68,13 @@ public class HotelController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{hotelId}")
+    @PutMapping("/{hotelId}/updateHotels")
     public ResponseEntity<HotelDto> updateHotelById(@PathVariable Long hotelId, @RequestBody HotelDto hotelDto) {
         HotelDto hotel = hotelService.updateHotelById(hotelId, hotelDto);
         return ResponseEntity.ok(hotel);
     }
 
-    @PutMapping("/{roomId}/")
+    @PutMapping("/{hotelId}/{roomId}/updateRooms")
     public ResponseEntity<RoomDto> updateRoomById(@PathVariable Long hotelId,
                                                   @PathVariable Long roomId,
                                                   @RequestBody RoomDto roomDto) {

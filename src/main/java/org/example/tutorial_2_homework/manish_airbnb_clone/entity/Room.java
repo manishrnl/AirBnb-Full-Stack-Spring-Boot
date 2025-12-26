@@ -32,13 +32,21 @@ public class Room {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
 
-    @Column(columnDefinition = "JSON")
-    @Convert(converter = StringListConverter.class)
-    private List<String> amenities;
+//    @Column(columnDefinition = "JSON")
+//    @Convert(converter = StringListConverter.class)
+//    private List<String> amenities;
+//
+//    @Column(columnDefinition = "JSON")
+//    @Convert(converter = StringListConverter.class)
+//    private List<String> photos;
 
-    @Column(columnDefinition = "JSON")
-    @Convert(converter = StringListConverter.class)
-    private List<String> photos;
+
+
+    @Column(columnDefinition = "TEXT[]")
+    private String[] photos;
+
+    @Column(columnDefinition = "TEXT[]")
+    private String[] amenities;
 
     @Column(nullable = false)
     private Integer totalCount;
