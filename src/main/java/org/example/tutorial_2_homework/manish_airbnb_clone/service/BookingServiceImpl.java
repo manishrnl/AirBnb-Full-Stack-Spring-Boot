@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.BookingRequest;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.GuestsDto;
+import org.example.tutorial_2_homework.manish_airbnb_clone.dto.HotelReportDto;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.*;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.BookingStatus;
 import org.example.tutorial_2_homework.manish_airbnb_clone.exception.ResourceNotFoundException;
@@ -23,8 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -58,6 +63,60 @@ public class BookingServiceImpl implements BookingService {
         inventoryRepository.findAndLockReservedInventory(booking.getRoom().getId(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getRoomsCount());
         inventoryRepository.confirmBooking(booking.getRoom().getId(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getRoomsCount());
         log.info("Successfully confirmed the booking for Booking ID: {}", booking.getId());
+    }
+
+    @Override
+    public List<BookingDto> getAllBookingsByHotelId(Long hotelId) {
+        log.info("Fetching all bookings for hotel with id: {}", hotelId);
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() ->
+                new ResourceNotFoundException("Hotel not found with id: " + hotelId));
+        UserEntity userEntity = getCurrentUser();
+        if (!userEntity.equals(hotel.getOwner()))
+            throw new UnAuthorisedException("Hotel does not belong to this user with id: " + userEntity.getId());
+
+        log.info("User with id: {} is authorised to view bookings for hotel with id: {}", userEntity.getId(), hotelId);
+        List<Booking> allBookings = bookingRepository.findByHotel(hotel);
+
+        return allBookings
+                .stream()
+                .map(booking -> modelMapper.map(booking, BookingDto.class))
+                .toList();
+
+    }
+
+    @Override
+    public List<HotelReportDto> getHotelReport(Long hotelId, LocalDate startDate,
+                                               LocalDate endDate) {
+        log.info("Getting hotel report for hotel with id: {}", hotelId);
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id: " + hotelId));
+        UserEntity userEntity = getCurrentUser();
+        if (!userEntity.equals(hotel.getOwner()))
+            throw new UnAuthorisedException("Hotel does not belong to this user with id: " + userEntity.getId());
+
+        log.info("Generating report for hotel with id: {} from date: {} to date: {}", hotelId, startDate, endDate);
+
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+        List<Booking> allBookings = bookingRepository.findByHotelAndCreatedAtBetween(hotel, startDateTime, endDateTime);
+
+        Long totalConfirmedBookings = allBookings
+                .stream()
+                .filter(booking -> booking.getBookingStatus() == BookingStatus.CONFIRMED)
+                .count();
+        BigDecimal totalRevenueConfirmedBookings = allBookings
+                .stream()
+                .filter(booking -> booking.getBookingStatus() == BookingStatus.CONFIRMED)
+                .map(Booking::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal averageRevenuePerBooking = totalConfirmedBookings == 0 ?
+                BigDecimal.ZERO :
+                totalRevenueConfirmedBookings.divide(BigDecimal.valueOf(totalConfirmedBookings), RoundingMode.HALF_UP);
+        log.info("Report generated: Total Confirmed Bookings= {} ,  Total Revenue = {} , Average Revenue Per Bookings= {} ",
+                totalConfirmedBookings, totalRevenueConfirmedBookings, averageRevenuePerBooking);
+
+        return Collections.singletonList(new HotelReportDto(totalConfirmedBookings, totalRevenueConfirmedBookings, averageRevenuePerBooking));
+
     }
 
 

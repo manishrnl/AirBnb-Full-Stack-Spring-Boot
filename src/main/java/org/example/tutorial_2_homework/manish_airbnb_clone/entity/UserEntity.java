@@ -2,11 +2,13 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Gender;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -26,10 +28,18 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Column(unique = true)
     private String email;
+
     private String password;
-    private String name;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
