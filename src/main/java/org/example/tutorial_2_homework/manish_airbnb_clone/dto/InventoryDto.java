@@ -1,0 +1,30 @@
+package org.example.tutorial_2_homework.manish_airbnb_clone.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class InventoryDto {
+    private Long id;
+    private LocalDate date;
+    private Integer bookedCount;
+    private Integer reservedCount;
+    private Integer totalCount;
+    private BigDecimal surgeFactor;
+    private BigDecimal price;
+    private Boolean closed;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+
+}

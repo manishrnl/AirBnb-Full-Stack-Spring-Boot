@@ -1,0 +1,8 @@
+start server in normal cmd and run below command
+1.   stripe login        # this will expire after 90 days so don't run this unless it expires
+2.   stripe listen --forward-to localhost:8080/webhook/payment
+
+# After this paste the webhook signing secret will be shown in the terminal
+# Copy that and add it to your .env file as STRIPE_WEBHOOK_SECRET
+# Example:
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
