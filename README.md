@@ -48,22 +48,22 @@ real-world vacation rental platform.
 ## 📂 Project Structure
 
 ```text
-    AirBnb-Full-Stack
-    ├── src/main/java/com/manish
-    │   ├── advices/          # To Tracks all exceptions and handles all
-    │   ├── auth/             # Secures application via Spring Security
-    │   ├── config/           # Configurations for Stripe , Bean , Web Authentication
-    │   ├── controller/       # REST endpoints (Bookings, Listings, Payments)
-    │   ├── dto/              # Database Dto so that none can see original table , db name
-    │   ├── entity/           # Database entities (User, Property, Reservation)
-    │   ├── exception/        # Handles Exceptions
-    │   └── repository/       # To talks to Database
-    │   └── security/         # Classes to Handle Security like Token creation, refresh token etc.,
-    │   └── service/          # Main class to do all operations using repository,entity,security etc.,
-    │   └── strategy/         # Strategy Pattern for different pricing models
-    │   └── util/             # Utility class to get all utils
-    ├── Dockerfile            # Infrastructure (Postgres, Redis)
-    └── pom.xml               # Maven dependencies
+📁 AirBnb-Full-Stack
+├── 📂 src/main/java/com/manish
+│   ├── 🛡️ advices/         # Global Exception handling & Controller Advices
+│   ├── 🔑 auth/            # Authentication logic & Spring Security entry points
+│   ├── ⚙️ config/          # Bean definitions (Stripe, Web Security, App Config)
+│   ├── 🕹️ controller/      # REST API Endpoints (Bookings, Listings, Payments)
+│   ├── 📦 dto/             # Data Transfer Objects for API request/response
+│   ├── 📑 entity/          # Database Entities (User, Property, Reservation)
+│   ├── ⚠️ exception/       # Custom Exception definitions
+│   ├── 🗄️ repository/      # Spring Data JPA Repositories (DB Communication)
+│   ├── 🔒 security/        # JWT logic, Token generation, & Filters
+│   ├── 🧠 service/         # Business logic layer (The core "Brain")
+│   ├── ♟️ strategy/        # Strategy Pattern (Flexible pricing models)
+│   └── 🛠️ util/             # Common helper methods and utilities
+├── 🐳 Dockerfile           # Infrastructure containerization (Postgres, Redis)
+└── 📝 pom.xml              # Maven project configuration & dependencies
 ```
 
 ---
@@ -78,19 +78,19 @@ real-world vacation rental platform.
 
 ## Clone the repo
 
-```
-    git clone [https://github.com/manishrnl/AirBnb-Full-Stack-Spring-Boot.git](https://github.com/manishrnl/AirBnb-Full-Stack-Spring-Boot.git)
+```bash
+    git clone https://github.com/manishrnl/AirBnb-Full-Stack-Spring-Boot.git
 ```
 
 # Build the project
 
-```
+```bash
     mvn clean package -DskipTests
 ```
 
 # Start Infrastructure
 
-```
+```bash
 docker-compose up -d
 ```
 
