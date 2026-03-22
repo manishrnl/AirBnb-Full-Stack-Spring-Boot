@@ -1,10 +1,9 @@
+
 package org.example.tutorial_2_homework.manish_airbnb_clone.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.tutorial_2_homework.manish_airbnb_clone.util.StringListConverter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,8 +14,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Room {
 
+public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,40 +24,54 @@ public class Room {
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
 
-    private String city;
+    // --- Basic Info ---
     @Column(nullable = false)
-    private String type;
+    private String title; // Short catchy name for the room
 
+    @Column(columnDefinition = "TEXT")
+    private String description; // Long detailed description
+
+    @Column(nullable = false)
+    private String type; // e.g., "Deluxe", "Penthouse", "Studio"
+
+    @Column(nullable = false)
+    private String city;
+
+    // --- Capacity & Layout ---
+    @Column(nullable = false)
+    private Integer capacity; // Max guests
+
+    @Column(nullable = false)
+    private Integer totalCount; // Total rooms of this type available in the hotel
+
+    private Integer bedrooms;
+    private Integer beds;
+    private Integer bathrooms;
+
+    // --- Pricing ---
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
 
-//    @Column(columnDefinition = "JSON")
-//    @Convert(converter = StringListConverter.class)
-//    private List<String> amenities;
-//
-//    @Column(columnDefinition = "JSON")
-//    @Convert(converter = StringListConverter.class)
-//    private List<String> photos;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomPhotos> photos;
 
+    @ElementCollection
+    @CollectionTable(name = "room_amenities", joinColumns = @JoinColumn(name = "room_id"))
+       private List<String> amenities;
 
+    // --- Ratings & Metadata ---
+    private Double rating;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] photos;
+    private Integer reviewCount;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] amenities;
+    @Column(columnDefinition = "TEXT")
+    private String houseRules;
 
-    @Column(nullable = false)
-    private Integer totalCount;
-
-    @Column(nullable = false)
-    private Integer capacity;
-
+    // --- Timestamps ---
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 }

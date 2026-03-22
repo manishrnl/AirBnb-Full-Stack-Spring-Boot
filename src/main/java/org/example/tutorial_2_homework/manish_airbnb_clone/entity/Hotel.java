@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.tutorial_2_homework.manish_airbnb_clone.util.StringListConverter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,26 +19,23 @@ public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Double rating;
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String city;
 
-//    @Column(columnDefinition = "JSON")
-//    @Convert(converter = StringListConverter.class)
-//    private List<String> amenities;
-//
-//    @Column(columnDefinition = "JSON")
-//    @Convert(converter = StringListConverter.class)
-//    private List<String> photos;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] photos;
+    @Column(columnDefinition = "TEXT") // Use TEXT if the description is long
+    private String description;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] amenities;
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HotelPhotos> photos; // Ensure this is exactly List<HotelPhotos>
+
+    @ElementCollection
+    @CollectionTable(name = "room_amenities", joinColumns = @JoinColumn(name = "room_id"))
+    private List<String> amenities;
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -11,6 +11,7 @@ public class HotelDto {
     private Long id;
     private String name;
     private String city;
+    private Double rating;
 
     private List<String> photos;
     private List<String> amenities;

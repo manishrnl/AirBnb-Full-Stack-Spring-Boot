@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.example.tutorial_2_homework.manish_airbnb_clone.util.AppUtils.getCurrentUser;
@@ -124,6 +125,45 @@ public class RoomServiceImpl implements RoomService {
 
         room = roomRepository.save(room);
         return modelMapper.map(room, RoomDto.class);
+    }
+
+    @Override
+    public List<RoomDto> getAllRooms() {
+        List<Room> getAllRooms = roomRepository.findAll();
+        if (getAllRooms.isEmpty())
+            throw new RuntimeException("No Rooms found");
+
+        return getAllRooms.stream()
+                .map((element) -> modelMapper.map(element, RoomDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RoomDto getRoomsByRoomId(Long roomId) {
+        Room getAllRooms = roomRepository.findRoomById(roomId);
+
+        return modelMapper.map(getAllRooms, RoomDto.class);
+    }
+
+    @Override
+    public Optional<RoomDto> getHotelNameByRoomId(Long roomId) {
+        log.info("Start getting hotels name");
+        Optional<Room> hotelName = roomRepository.findByIdWithHotel(roomId);
+        log.info("Hotel name is {}", hotelName);
+
+        RoomDto roomDto = modelMapper.map(hotelName, RoomDto.class);
+        return Optional.ofNullable(roomDto);
+
+    }
+
+    @Override
+    public List<RoomDto> getAllRoomsByHotelId(Long hotelId) {
+
+        List<Room> allRooms = roomRepository.findAllByHotelId(hotelId);
+
+        return allRooms.stream()
+                .map((element) -> modelMapper.map(element, RoomDto.class))
+                .collect(Collectors.toList());
     }
 
 

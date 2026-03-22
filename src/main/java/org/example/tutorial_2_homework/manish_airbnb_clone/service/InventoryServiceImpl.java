@@ -3,11 +3,13 @@ package org.example.tutorial_2_homework.manish_airbnb_clone.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tutorial_2_homework.manish_airbnb_clone.dto.*;
+import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Hotel;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Inventory;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.Room;
 import org.example.tutorial_2_homework.manish_airbnb_clone.entity.UserEntity;
 import org.example.tutorial_2_homework.manish_airbnb_clone.exception.ResourceNotFoundException;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.HotelMinPriceRepository;
+import org.example.tutorial_2_homework.manish_airbnb_clone.repository.HotelRepository;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.InventoryRepository;
 import org.example.tutorial_2_homework.manish_airbnb_clone.repository.RoomRepository;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,7 @@ import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final HotelMinPriceRepository hotelMinPriceRepository;
     private final InventoryRepository inventoryRepository;
     private final RoomRepository roomRepository;
+    private final HotelRepository hotelRepository;
 
     @Override
     public void initializeRoomForAYear(Room room) {
@@ -138,6 +142,8 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryRepository.updateInventory(roomId, startDate, endDate, closed, surgeFactor);
         return null;
     }
+
+
 
 
 }

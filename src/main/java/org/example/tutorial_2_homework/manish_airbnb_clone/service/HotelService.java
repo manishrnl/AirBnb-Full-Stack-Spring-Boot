@@ -17,8 +17,10 @@ public interface HotelService {
 
     void activateHotel(Long hotelId);
 
-    List<HotelDto> getAllHotels();
+    List<HotelDto> getAllHotelsOfCurrentUsers();
 
 
     HotelInfoDto getHotelInfoById(Long hotelId);
+
+    List<HotelDto> getAllHotels();
 }

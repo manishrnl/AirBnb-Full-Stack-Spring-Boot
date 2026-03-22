@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/hotels/{hotelId:\\d+}/rooms")
@@ -44,6 +45,10 @@ public class RoomAdminController {
     @GetMapping
     public ResponseEntity<List<RoomDto>> getAllRoomsInHotel(@PathVariable Long hotelId) {
         return ResponseEntity.ok(roomService.getAllRoomsInHotel(hotelId));
+    }
+    @GetMapping("/allRoomsByHotelId")
+    public ResponseEntity<List<RoomDto>> getAllRoomsByHotelId(@PathVariable Long hotelId) {
+        return ResponseEntity.ok(roomService.getAllRoomsByHotelId(hotelId));
     }
 
     @GetMapping("/{roomId:\\d+}")

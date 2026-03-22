@@ -26,12 +26,16 @@ public class HotelController {
     private final BookingService bookingService;
     private final RoomService roomService;
 
-    @GetMapping
+    @GetMapping("/currentUser")
+    public ResponseEntity<List<HotelDto>> getAllHotelsOfCurrentUsers() {
+        List<HotelDto> hotelDto = hotelService.getAllHotelsOfCurrentUsers();
+        return new ResponseEntity<>(hotelDto, HttpStatus.OK);
+    }
+    @GetMapping("/allHotels")
     public ResponseEntity<List<HotelDto>> getAllHotels() {
         List<HotelDto> hotelDto = hotelService.getAllHotels();
         return new ResponseEntity<>(hotelDto, HttpStatus.OK);
     }
-
     @GetMapping("/{hotelId}")
     public ResponseEntity<HotelDto> getHotelById(@PathVariable Long hotelId) {
         HotelDto hotelDto = hotelService.getHotelById(hotelId);

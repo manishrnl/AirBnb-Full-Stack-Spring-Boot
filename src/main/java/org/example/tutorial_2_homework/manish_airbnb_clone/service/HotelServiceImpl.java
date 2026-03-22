@@ -114,7 +114,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelDto> getAllHotels() {
+    public List<HotelDto> getAllHotelsOfCurrentUsers() {
         UserEntity userEntity = getCurrentUser();
         log.info("Getting all hotels for the current user with id : {}", userEntity.getId());
         List<Hotel> hotels = hotelRepository.findByOwner(userEntity);
@@ -137,6 +137,19 @@ public class HotelServiceImpl implements HotelService {
                 .toList();
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelDto.class), rooms);
+    }
+
+    @Override
+    public List<HotelDto> getAllHotels() {
+
+        List<Hotel> hotels = hotelRepository.findAll();
+        log.info("Founded {} hotels ", hotels.size());
+        return hotels
+                .stream()
+                .map((element) -> modelMapper.map(element, HotelDto.class))
+                .collect(Collectors.toList());
+
+
     }
 
 
