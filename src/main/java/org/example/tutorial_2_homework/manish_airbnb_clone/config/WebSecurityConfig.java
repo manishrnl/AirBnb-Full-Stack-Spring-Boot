@@ -67,7 +67,8 @@ public class WebSecurityConfig {
         config.setAllowedOriginPatterns(List.of(
                 "https://manishrnl-1-hotel-clone.netlify.app",
                 "http://localhost:5173",
-                "http://localhost:8080"
+                "http://localhost:8080",
+                "https://airbnb-full-stack-spring-boot.onrender.com"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
